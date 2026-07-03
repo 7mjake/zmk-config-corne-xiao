@@ -1,0 +1,6 @@
+file_format: "1"
+id: corne_xiao_oled_yads
+name: CORNE XIAO OLED YADS-style status screen
+type: shield
+requires:
+  - i2c_oled

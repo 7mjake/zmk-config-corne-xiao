@@ -1,0 +1,34 @@
+#include "../corne_xiao_v2/corne_xiao_v2.dtsi"
+
+/ {
+    chosen {
+        zmk,kscan = &mock_kscan;
+        zmk,physical-layout = &corne_xiao_6col_layout;
+    };
+
+    mock_kscan: mock_kscan_0 {
+        compatible = "zmk,kscan-mock";
+        columns = <0>;
+        rows = <0>;
+        events = <0>;
+    };
+
+    charge_status_splits {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        charge_left_split: charge_left_split@a {
+            compatible = "zmk,input-split";
+            reg = <10>;
+        };
+
+        charge_right_split: charge_right_split@b {
+            compatible = "zmk,input-split";
+            reg = <11>;
+        };
+    };
+};
+
+&kscan0 {
+    status = "disabled";
+};

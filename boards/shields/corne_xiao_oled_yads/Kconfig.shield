@@ -1,0 +1,5 @@
+# Copyright (c) 2026
+# SPDX-License-Identifier: MIT
+
+config SHIELD_CORNE_XIAO_OLED_YADS
+    def_bool $(shields_list_contains,corne_xiao_oled_yads)

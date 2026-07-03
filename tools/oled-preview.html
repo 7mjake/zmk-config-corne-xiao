@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Corne OLED charging-icon preview</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, "Segoe UI", sans-serif; }
+    body { margin: 0; background: #11151b; color: #e9eef5; }
+    main { max-width: 1180px; margin: 0 auto; padding: 32px 24px 48px; }
+    h1 { margin: 0 0 8px; font-size: 26px; }
+    p { color: #9da9b7; margin: 0 0 24px; }
+    .controls { display: flex; gap: 18px; align-items: center; margin-bottom: 22px; }
+    label { color: #c8d1dc; }
+    input { margin-right: 7px; accent-color: #5ed0a0; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(420px, 1fr)); gap: 18px; }
+    button { text-align: left; border: 1px solid #303946; border-radius: 14px; padding: 16px;
+      background: #1a2029; color: inherit; cursor: pointer; }
+    button:hover { border-color: #66758a; }
+    button.selected { border-color: #5ed0a0; box-shadow: 0 0 0 2px #5ed0a033; }
+    .title { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 650; }
+    .badge { color: #5ed0a0; font-size: 12px; opacity: 0; }
+    button.selected .badge { opacity: 1; }
+    canvas { width: 100%; aspect-ratio: 2 / 1; background: black; image-rendering: pixelated;
+      image-rendering: crisp-edges; border-radius: 4px; }
+    .note { margin-top: 20px; padding: 14px 16px; border-radius: 10px; background: #171d25;
+      color: #aeb9c7; font-family: ui-monospace, Consolas, monospace; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>128×64 OLED charging-icon preview</h1>
+  <p>Each canvas uses the firmware’s generated LVGL glyph bitmaps, exact 128×64 coordinates, and physical white-on-black OLED polarity.</p>
+  <div class="controls">
+    <label><input id="leftCharging" type="checkbox" checked>Left charging</label>
+    <label><input id="rightCharging" type="checkbox" checked>Right charging</label>
+  </div>
+  <div id="grid" class="grid"></div>
+  <div id="selection" class="note">Selected: E — Custom bolt</div>
+</main>
+<script>
+const variants = [
+  { id: "E", name: "Custom bolt",  rows: ["00100","01100","11000","11110","00110","01100","01000","00000","00000"] },
+  { id: "A", name: "Angular bolt", rows: ["00100","01100","01000","11110","00110","00100","01100","01000","00000"] },
+  { id: "B", name: "Solid bolt",   rows: ["00110","01100","01100","11111","00110","00110","01100","11000","00000"] },
+  { id: "C", name: "Slim bolt",    rows: ["00100","00100","01100","01000","11110","00110","00100","00100","00000"] },
+  { id: "D", name: "Compact bolt", rows: ["00100","01100","01000","11110","00100","01100","01000","00000","00000"] }
+];
+
+// These are the exact 1-bpp glyph payloads and metrics generated into
+// micro5_22.c and micro5_44.c by lv_font_conv. Bits are MSB-first and packed
+// continuously across rows, matching LVGL's bitmap_format=0 decoder.
+const fonts = {
+  22: {
+    lineHeight: 12, baseLine: 2,
+    glyphs: {
+      "9":{a:8,w:6,h:10,d:[255,252,243,255,240,195,255,240]},
+      "3":{a:8,w:6,h:10,d:[255,240,195,60,240,195,255,240]},
+      "7":{a:8,w:6,h:10,d:[255,240,195,12,51,12,48,192]},
+      "8":{a:8,w:6,h:10,d:[255,252,243,255,252,243,255,240]}
+    }
+  },
+  44: {
+    lineHeight: 24, baseLine: 4,
+    glyphs: {
+      "M":{a:24,w:20,h:20,d:[255,15,15,240,240,255,15,15,240,240,240,240,255,15,15,240,240,255,15,15,240,240,255,15,15,240,240,255,15,15,240,240,255,15,15,240,240,255,15,15,240,240,255,15,15,240,240,255,15,15]},
+      "A":{a:16,w:12,h:20,d:[15,0,240,15,0,240,240,255,15,240,255,15,255,255,255,255,255,255,240,255,15,240,255,15,240,255,15,240,255,15]},
+      "C":{a:12,w:8,h:20,d:[255,255,255,255,240,240,240,240,240,240,240,240,240,240,240,240,255,255,255,255]}
+    }
+  }
+};
+
+function glyphPixel(glyph, x, y) {
+  const bit = y * glyph.w + x;
+  return (glyph.d[bit >> 3] >> (7 - (bit & 7))) & 1;
+}
+
+function textWidth(font, value) {
+  return [...value].reduce((sum, ch) => sum + (font.glyphs[ch]?.a ?? 0), 0);
+}
+
+function text(ctx, font, value, x, y, boxWidth=0, align="left") {
+  if (align === "right") x += boxWidth - textWidth(font, value);
+  for (const ch of value) {
+    const glyph = font.glyphs[ch];
+    if (!glyph) continue;
+    for (let yy=0; yy<glyph.h; yy++) for (let xx=0; xx<glyph.w; xx++) {
+      if (glyphPixel(glyph, xx, yy)) ctx.fillRect(x + xx, y + yy, 1, 1);
+    }
+    x += glyph.a;
+  }
+}
+
+function bolt(ctx, rows, x, y) {
+  rows.forEach((row, yy) => [...row].forEach((bit, xx) => {
+    if (bit === "1") ctx.fillRect(x + xx, y + yy, 1, 1);
+  }));
+}
+
+function batteryBar(ctx, x, y, width, level, rtl=false) {
+  ctx.fillRect(x, y, width, 1);
+  ctx.fillRect(x, y+3, width, 1);
+  ctx.fillRect(x, y, 1, 4);
+  ctx.fillRect(x+width-1, y, 1, 4);
+  const fill = Math.max(1, Math.floor((width-2) * level / 100));
+  ctx.fillRect(rtl ? x+width-1-fill : x+1, y+1, fill, 2);
+}
+
+function draw(canvas, variant) {
+  canvas.width = 128; canvas.height = 64;
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = "#000"; ctx.fillRect(0,0,128,64);
+  ctx.fillStyle = "#fff";
+  text(ctx, fonts[44], "MAC", 4, 1);
+  text(ctx, fonts[22], "93", 4, 45, 54, "left");
+  text(ctx, fonts[22], "78", 70, 45, 54, "right");
+  if (leftCharging.checked) bolt(ctx, variant.rows, 20, 45);
+  if (rightCharging.checked) bolt(ctx, variant.rows, 102, 45);
+  batteryBar(ctx, 4, 59, 54, 93);
+  batteryBar(ctx, 70, 59, 54, 78, true);
+}
+
+const grid = document.querySelector("#grid");
+const leftCharging = document.querySelector("#leftCharging");
+const rightCharging = document.querySelector("#rightCharging");
+const selection = document.querySelector("#selection");
+let selected = "E";
+variants.forEach(v => {
+  const card = document.createElement("button");
+  card.type = "button";
+  card.dataset.variant = v.id;
+  card.className = v.id === selected ? "selected" : "";
+  card.innerHTML = `<div class="title"><span>${v.id} — ${v.name}</span><span class="badge">SELECTED</span></div><canvas aria-label="${v.name} OLED preview"></canvas>`;
+  card.addEventListener("click", () => {
+    selected = v.id;
+    document.querySelectorAll("button").forEach(b => b.classList.toggle("selected", b.dataset.variant === selected));
+    selection.textContent = `Selected: ${v.id} — ${v.name} | ${v.rows.join(" / ")}`;
+  });
+  grid.appendChild(card);
+  draw(card.querySelector("canvas"), v);
+});
+
+function redraw() {
+  document.querySelectorAll("button").forEach((card, i) => draw(card.querySelector("canvas"), variants[i]));
+}
+leftCharging.addEventListener("change", redraw);
+rightCharging.addEventListener("change", redraw);
+</script>
+</body>
+</html>

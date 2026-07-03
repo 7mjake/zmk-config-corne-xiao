@@ -1,0 +1,4 @@
+config CORNE_XIAO_CHARGE_STATUS
+    bool "Corne XIAO split charging status"
+    default y if SHIELD_CORNE_XIAO_V2_LEFT || SHIELD_CORNE_XIAO_V2_RIGHT
+    depends on ZMK_SPLIT && !ZMK_SPLIT_ROLE_CENTRAL

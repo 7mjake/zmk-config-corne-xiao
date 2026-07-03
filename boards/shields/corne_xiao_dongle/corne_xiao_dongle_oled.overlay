@@ -1,0 +1,58 @@
+#include "corne_xiao_dongle.overlay"
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+#define PC 1
+#define SYM 3
+
+/ {
+    chosen {
+        zephyr,display = &oled;
+    };
+
+    prototype_buttons: prototype_buttons {
+        compatible = "zmk,kscan-gpio-direct";
+        wakeup-source;
+        input-gpios
+            = <&xiao_d 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&xiao_d 1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            ;
+    };
+
+    prototype_button_behaviors: prototype_button_behaviors {
+        compatible = "zmk,kscan-sideband-behaviors";
+        kscan = <&prototype_buttons>;
+        auto-enable;
+        wakeup-source;
+
+        toggle_pc {
+            row = <0>;
+            column = <0>;
+            bindings = <&tog PC>;
+        };
+
+        toggle_sym {
+            row = <0>;
+            column = <1>;
+            bindings = <&tog SYM>;
+        };
+    };
+};
+
+&xiao_i2c {
+    status = "okay";
+
+    oled: ssd1306@3c {
+        compatible = "solomon,ssd1306fb";
+        reg = <0x3c>;
+        width = <128>;
+        height = <64>;
+        segment-offset = <0>;
+        page-offset = <0>;
+        display-offset = <0>;
+        multiplex-ratio = <63>;
+        segment-remap;
+        com-invdir;
+        inversion-on;
+        prechargep = <0x22>;
+    };
+};

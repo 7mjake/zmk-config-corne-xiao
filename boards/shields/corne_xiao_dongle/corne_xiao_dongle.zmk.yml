@@ -1,0 +1,12 @@
+file_format: "1"
+id: corne_xiao_dongle
+name: Corne XIAO Dongle
+type: shield
+url: https://github.com/friction07/corne-xiao/tree/main/rev2
+requires:
+  - xiao_ble
+features:
+  - keys
+  - studio
+siblings:
+  - corne_xiao_dongle_oled

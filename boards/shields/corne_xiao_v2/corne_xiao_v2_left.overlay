@@ -1,4 +1,28 @@
 #include "corne_xiao_v2.dtsi"
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/ {
+    charge_status_input: charge_status_input {
+        compatible = "gpio-keys";
+        debounce-interval-ms = <50>;
+
+        charge_status_pin: charge_status_pin {
+            gpios = <&gpio0 17 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+            zephyr,code = <INPUT_KEY_0>;
+        };
+    };
+
+    charge_status_splits {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        charge_status_split: charge_status_split@a {
+            compatible = "zmk,input-split";
+            reg = <10>;
+            device = <&charge_status_input>;
+        };
+    };
+};
 
 &kscan0 {
     col-gpios
