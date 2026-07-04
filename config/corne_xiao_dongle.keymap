@@ -1,6 +1,0 @@
-#include "corne_xiao_common.dtsi"
-
-&{/keymap/sim_layer} {
-    sensor-bindings = <&inc_dec_kp C_BRIGHTNESS_INC C_BRIGHTNESS_DEC
-                       &inc_dec_kp C_BRIGHTNESS_INC C_BRIGHTNESS_DEC>;
-};

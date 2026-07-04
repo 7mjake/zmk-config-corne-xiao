@@ -29,8 +29,8 @@ Artifacts and SHA-256 hashes are written under `local-firmware`. Use
 5. Pair the left half first, then power and pair the right half so the OLED
    battery rows remain left-to-right.
 
-The display-free `corne_xiao_dongle-zmk.uf2` is a fallback. Returning to the
-Totem requires restoring its dongle firmware and re-pairing its halves because
+Returning to the Totem requires restoring its dongle firmware and re-pairing
+its halves because
 the settings reset clears the dongle's existing split bonds.
 
 ## Charging status and PC encoder

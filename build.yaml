@@ -1,21 +1,16 @@
 include:
   - board: xiao_ble//zmk
     shield: corne_xiao_v2_left
-    cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
+    cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n -DKEYMAP_FILE=/github/workspace/config/corne_xiao_dongle_oled.keymap
     artifact-name: corne_xiao_v2_left-zmk
   - board: xiao_ble//zmk
     shield: corne_xiao_v2_right
-    cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
+    cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n -DKEYMAP_FILE=/github/workspace/config/corne_xiao_dongle_oled.keymap
     artifact-name: corne_xiao_v2_right-zmk
-  - board: xiao_ble//zmk
-    shield: corne_xiao_dongle
-    snippet: studio-rpc-usb-uart
-    cmake-args: -DCONFIG_ZMK_STUDIO=y
-    artifact-name: corne_xiao_dongle-zmk
   - board: xiao_ble//zmk
     shield: corne_xiao_dongle_oled corne_xiao_oled_yads
     snippet: studio-rpc-usb-uart
-    cmake-args: -DCONFIG_ZMK_STUDIO=y
+    cmake-args: -DCONFIG_ZMK_STUDIO=y -DKEYMAP_FILE=/github/workspace/config/corne_xiao_dongle_oled.keymap
     artifact-name: corne_xiao_dongle_oled-zmk
   - board: xiao_ble//zmk
     shield: settings_reset

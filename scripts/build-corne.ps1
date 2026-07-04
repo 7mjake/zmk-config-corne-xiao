@@ -21,7 +21,7 @@ $dockerArgs = @(
     "--env", "REFRESH=$refreshValue",
     "--workdir", "/workspace",
     $image,
-    "bash", "/config-repo/scripts/build-corne-container.sh"
+    "bash", "-c", "sed 's/\r$//' /config-repo/scripts/build-corne-container.sh | bash"
 )
 
 & docker @dockerArgs
@@ -32,7 +32,6 @@ if ($LASTEXITCODE -ne 0) {
 $artifacts = @(
     "corne_xiao_v2_left-zmk.uf2",
     "corne_xiao_v2_right-zmk.uf2",
-    "corne_xiao_dongle-zmk.uf2",
     "corne_xiao_dongle_oled-zmk.uf2",
     "settings_reset-xiao_ble-zmk.uf2"
 )

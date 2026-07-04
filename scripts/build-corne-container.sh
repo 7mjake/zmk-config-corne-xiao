@@ -51,7 +51,8 @@ build_target \
     corne_xiao_v2_left-zmk.uf2 \
     "" \
     -DCONFIG_ZMK_SPLIT=y \
-    -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
+    -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n \
+    -DKEYMAP_FILE=/config-repo/config/corne_xiao_dongle_oled.keymap
 
 build_target \
     corne_xiao_v2_right \
@@ -59,21 +60,16 @@ build_target \
     corne_xiao_v2_right-zmk.uf2 \
     "" \
     -DCONFIG_ZMK_SPLIT=y \
-    -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
-
-build_target \
-    corne_xiao_dongle \
-    corne_xiao_dongle \
-    corne_xiao_dongle-zmk.uf2 \
-    studio-rpc-usb-uart \
-    -DCONFIG_ZMK_STUDIO=y
+    -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n \
+    -DKEYMAP_FILE=/config-repo/config/corne_xiao_dongle_oled.keymap
 
 build_target \
     corne_xiao_dongle_oled \
     "corne_xiao_dongle_oled corne_xiao_oled_yads" \
     corne_xiao_dongle_oled-zmk.uf2 \
     studio-rpc-usb-uart \
-    -DCONFIG_ZMK_STUDIO=y
+    -DCONFIG_ZMK_STUDIO=y \
+    -DKEYMAP_FILE=/config-repo/config/corne_xiao_dongle_oled.keymap
 
 build_target \
     settings_reset_xiao_ble \
