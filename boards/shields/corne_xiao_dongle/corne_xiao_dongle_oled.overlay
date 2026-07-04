@@ -9,18 +9,15 @@
         zephyr,display = &oled;
     };
 
-    prototype_buttons: prototype_buttons {
+    encoder_button: encoder_button {
         compatible = "zmk,kscan-gpio-direct";
         wakeup-source;
-        input-gpios
-            = <&xiao_d 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            , <&xiao_d 1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            ;
+        input-gpios = <&xiao_d 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
     };
 
-    prototype_button_behaviors: prototype_button_behaviors {
+    encoder_button_behavior: encoder_button_behavior {
         compatible = "zmk,kscan-sideband-behaviors";
-        kscan = <&prototype_buttons>;
+        kscan = <&encoder_button>;
         auto-enable;
         wakeup-source;
 
@@ -30,12 +27,13 @@
             bindings = <&tog PC>;
         };
 
-        toggle_sym {
-            row = <0>;
-            column = <1>;
-            bindings = <&tog SYM>;
-        };
     };
+};
+
+&left_encoder {
+    a-gpios = <&xiao_d 0 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+    b-gpios = <&xiao_d 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+    status = "okay";
 };
 
 &xiao_i2c {

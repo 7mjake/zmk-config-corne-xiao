@@ -13,7 +13,8 @@ Create a third sibling project, `zmk-config-universal-dongle`, using the same pi
 Copy into it:
 
 - The current 44-position Corne keymap and six-layer behavior snapshot. It already contains the 38 shared Totem positions plus the six Corne-only keys.
-- The dongle shield, D0 PC-layer toggle, and D1 SYM-layer toggle.
+- The OLED dongle shield, with an EC11 encoder on D0/D1 and its push switch on
+  D2 toggling the PC layer.
 - The corrected OLED shield and custom dashboard.
 - The Hyper Z/X/C/V actions, navigation morphs, combos, Studio support, and PC-mode behavior.
 
@@ -51,7 +52,9 @@ Resetting all devices is expected to remove the existing bonds. A normal board s
 - All 44 Corne keys and both encoders work.
 - Home-row mod/layer taps retain the 200 ms balanced behavior.
 - NUM, SYM, ADJ, NAV, PC mode, combos, and Hyper/AHK actions work from both boards.
-- D0 and D1 operate identically regardless of the connected board.
+- D0/D1 rotation controls volume normally and brightness while SYM is active.
+  The encoder push switch on D2 operates identically regardless of the
+  connected board.
 - Four split bonds survive dongle and keyboard power cycles.
 - OLED identifies the active board and shows the correct half batteries.
 - Sleeping one board does not prevent the other board from connecting.

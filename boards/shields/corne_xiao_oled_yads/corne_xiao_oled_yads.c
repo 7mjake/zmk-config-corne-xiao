@@ -93,8 +93,8 @@ static void charging_display_work_cb(struct k_work *work);
 K_WORK_DEFINE(charging_display_work, charging_display_work_cb);
 
 static const struct device *oled_display = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
-static const struct device *dongle_buttons =
-    DEVICE_DT_GET(DT_NODELABEL(prototype_button_behaviors));
+static const struct device *encoder_button =
+    DEVICE_DT_GET(DT_NODELABEL(encoder_button_behavior));
 
 static void button_reblank_work_cb(struct k_work *work) {
     ARG_UNUSED(work);
@@ -436,10 +436,10 @@ lv_obj_t *zmk_display_status_screen(void) {
     corne_xiao_yads_battery_init();
     k_work_reschedule_for_queue(zmk_display_work_q(), &peripheral_status_work, K_NO_WAIT);
 
-    if (device_is_ready(dongle_buttons)) {
-        int err = kscan_config(dongle_buttons, dongle_button_callback);
+    if (device_is_ready(encoder_button)) {
+        int err = kscan_config(encoder_button, dongle_button_callback);
         if (err == 0) {
-            err = kscan_enable_callback(dongle_buttons);
+            err = kscan_enable_callback(encoder_button);
         }
         if (err != 0) {
             LOG_WRN("Could not attach display wake callback to dongle buttons: %d", err);
